@@ -15,67 +15,84 @@ public class InputActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        b=ActivityInputBinding.inflate(getLayoutInflater());
+        //Initialize binding
+        b = ActivityInputBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
 
         setTitle("Input Activity");
 
 
+        //Send data back
         sendInputBack();
 
     }
 
+    /**
+     * Sending data to InputConstraints Activity
+     */
     private void sendInputBack() {
+        //click event on SendBack Button
         b.btnSendback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data=b.data.getText().toString().trim();
-                if(data.isEmpty()){
+                String data = b.data.getText().toString().trim();
+                //check data is not empty
+                if (data.isEmpty()) {
                     b.data.setError("Please enter data");
                     return;
                 }
-                if(!data.matches(checkConstraints())){
+                //check data  validation
+                if (!data.matches(checkConstraints())) {
                     b.data.setError("Invalid");
                     return;
                 }
-                Intent intent=new Intent(InputActivity.this,InputConstraintsActivity.class);
-                intent.putExtra(Constants.INPUT_DATA,data);
-                setResult(RESULT_OK,intent);
+                //Return data to InputConstraints Activity
+                Intent intent = new Intent(InputActivity.this, InputConstraintsActivity.class);
+                intent.putExtra(Constants.INPUT_DATA, data);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
     }
 
+    /**
+     * To check data Validation
+     *
+     * @return String of regex
+     */
     private String checkConstraints() {
-        Bundle bundle=getIntent().getExtras();
-        for (String str:bundle.keySet()){
-        Log.d("Abhi", "checkConstraints: "+bundle.getString(str));
 
-        }
+        Bundle bundle = getIntent().getExtras();
+
         StringBuilder regex = new StringBuilder();
 
         regex.append("^([");
-        if(Boolean.parseBoolean(bundle.getString(Constants.UPPER_CASE,"false"))){
+
+
+        //check data contain Uppercase letters
+        if (Boolean.parseBoolean(bundle.getString(Constants.UPPER_CASE, "false"))) {
             regex.append("A-Z");
         }
 
-        if(Boolean.parseBoolean(bundle.getString(Constants.LOWER_CASE,"false"))){
+        //check data contain Lowercase letters
+        if (Boolean.parseBoolean(bundle.getString(Constants.LOWER_CASE, "false"))) {
             regex.append("a-z");
 
         }
-
-        if(Boolean.parseBoolean(bundle.getString(Constants.DIGITS,"false"))){
+        //check data contain Numbers
+        if (Boolean.parseBoolean(bundle.getString(Constants.DIGITS, "false"))) {
             regex.append("0-9");
 
         }
 
-        if(Boolean.parseBoolean(bundle.getString(Constants.OPERATORS,"false"))){
+        //check data contain Operators
+        if (Boolean.parseBoolean(bundle.getString(Constants.OPERATORS, "false"))) {
             regex.append("+-/*%");
 
         }
-
-        if(Boolean.parseBoolean(bundle.getString(Constants.SYMBOLS,"false"))){
-           regex.append("@#\\\\^{}\\]\"\"^()?`~!;:''.,|\\[");
+        //check data contain symbols
+        if (Boolean.parseBoolean(bundle.getString(Constants.SYMBOLS, "false"))) {
+            regex.append("@#\\\\^{}\\]\"\"^()?`~!;:''.,|\\[");
         }
         regex.append("])+");
 
